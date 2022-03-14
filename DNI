@@ -1,0 +1,62 @@
+package gym;
+
+import java.util.Scanner;
+import java.util.logging.Logger;
+
+
+    public class DNI {
+        Scanner teclat = new Scanner (System.in);
+
+        private String numero;
+        private String letra;
+        private String Dni;
+        private char []letras ={'T','R','W','A','G','M','Y','F','P','D','X','B' ,'N','J','Z','S','Q','V','H','L','C','K','E'};
+
+        public DNI() {
+        }
+
+        public DNI(String Dni) {
+            this.Dni = Dni;
+        }
+
+    public String getDni() {
+        return Dni;
+    }
+
+        
+
+       
+       
+        public boolean ValidarDni(String dni){
+            if(dni.length() != 9)return false;
+            char num = dni.charAt(8);
+               
+            if(!(Character.isLetter(num)))return false;
+           
+            char letra = Character.toUpperCase(num);
+           
+            String dniNum = dni.substring(0,8);
+               
+             
+            if(soloNumeros(dniNum) !=true) return false;
+            if(!(calcularLetra(dniNum) == letra) ) {
+               return false;}
+            return true;
+        }
+       
+        private boolean soloNumeros(String dniNum){
+            try{
+                Integer.parseInt(dniNum);
+               
+                return true;
+            }catch(Exception e){
+                return false;
+            }
+        }
+        private char calcularLetra(String dniNum){
+            int resto = Integer.parseInt(dniNum) % 23;
+            return letras[resto];
+        }
+} 
+
+   
