@@ -1,0 +1,40 @@
+
+package gym;
+
+
+public class Bancari {
+    private String iban;
+    private String banco;
+    private String oficina;
+    private String control;
+    private String cuenta;
+
+    public Bancari(String iban) {
+        this.iban = iban;
+    }
+
+    public Bancari() {
+    }
+
+    public String getIban() {
+        return iban;
+    }
+     
+    
+   public boolean ValidarIban(String iban){
+   
+       
+       if(iban.length() != 24 && iban.substring(0, 1).toUpperCase().equals("E") &&  iban.substring(1, 2).toUpperCase().equals("S"))return false;
+       
+       String majuscula=iban.toUpperCase();
+       
+       String ccc = majuscula.replaceAll("ES", "1428");
+       
+   
+   
+   return true;
+   }
+
+   
+    
+}
