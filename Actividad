@@ -1,0 +1,84 @@
+package gym;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+
+public class Actividad {
+   
+    private int id;
+    private String nom;
+    private String dura;
+    private String dias;
+    private int MesReserva;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+    public void setDura(String dura) {
+        this.dura = dura;
+    }
+    public void setDias(String dias) {
+        this.dias = dias;
+    }
+    public void setMesReserva(int MesReserva) {
+        this.MesReserva = MesReserva;
+    }
+    @Override
+    public String toString() {
+        return   " id=" + id + ", nom=" + nom + ", dura=" + dura + ", dias=" + dias ;
+    }
+    
+    private void sacar(ResultSet rs) throws SQLException{
+        this.setDias(rs.getString("dias"));
+        this.setNom(rs.getString("nom"));
+        this.setId(rs.getInt("id"));
+        this.setDura(rs.getString("dura"));
+        this.setMesReserva(rs.getInt("vez"));
+      
+    }
+   
+    public ArrayList<Actividad> ActividadMesReservaAlDia() throws SQLException{
+        ArrayList<Actividad>actividades = new ArrayList<>();
+        Connection con = DBConnection.getCon();
+        PreparedStatement ps = con.prepareStatement("select count(reserva.data_alta ) as vez, actividad.* from actividad join reserva "
+                + "on reserva.id = actividad.id where CURDATE()=data_alta group by actividad.nom order by vez desc");
+        ResultSet rs = ps.executeQuery();
+        System.out.println("  ºº  visualitzar actividad revarvan per este dia  ºº" );
+        while(rs.next()){
+            Actividad a = new Actividad();
+            a.sacar(rs);
+           this.setMesReserva(rs.getInt("vez"));
+            System.out.print("numero de reserva: " + MesReserva );
+            System.out.println(a);
+            actividades.add(a);
+        }
+    return actividades;  
+    }
+
+    
+     public ArrayList<Actividad> HistoricActividad() throws SQLException{
+        ArrayList<Actividad>actividades = new ArrayList<>();
+        Connection con = DBConnection.getCon();
+        PreparedStatement ps = con.prepareStatement("select count(reserva.data_alta ) as vez, actividad.* from actividad join reserva "
+                + "on reserva.id = actividad.id  group by actividad.nom order by vez desc");
+        ResultSet rs = ps.executeQuery();
+         System.out.println(" ºº visualitzar el historic del actividad reservan ºº");
+        while(rs.next()){
+            Actividad a = new Actividad();
+            a.sacar(rs);
+           this.setMesReserva(rs.getInt("vez"));
+            System.out.print("numero de reserva: " + MesReserva );
+            System.out.println(a);
+            actividades.add(a);
+        }
+    return actividades;  
+    }
+ 
+}
