@@ -1,0 +1,179 @@
+package gym;
+
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+
+public class Gimnas {
+   
+    private String nom;
+    private String CIF;
+    private String telefon;
+   
+    static boolean sortir = false;
+    static int opcio;
+    static Scanner teclat = new Scanner (System.in);
+    ArrayList<Client>clientes;
+    ArrayList<Actividad>actividades;
+    ArrayList<Reserva>reserves;
+   
+   Client c = new Client();
+   Actividad a = new Actividad();
+   
+    public void gestionarGimnas() throws SQLException{
+     
+        do{
+           
+            System.out.println("\n   ªªª   Menu Gimnas   ªªª   ");
+            System.out.println("  1- Gestionar client  ");
+            System.out.println("  2- Visualitzar les actividad mes reserva del dia ");
+            System.out.println("  3- Visualitzar historic les actividades mes reserva");
+            System.out.println("  4- Sortir");
+            System.out.println("\t\nTRIA UNA OPCIO:");
+            
+            while(!teclat.hasNextInt()){
+                System.out.println("valor no valid");
+                teclat.next();
+                System.out.println("entre un numero: ");
+            }
+           
+            switch(opcio= teclat.nextInt() ){
+                case 1: gestionarClient();
+                       
+                   break;
+                case 2 :
+                this.actividades = a.ActividadMesReservaAlDia();
+                         
+                    break;
+                case 3 :
+                    this.actividades = a.HistoricActividad();
+                    break;
+                case 4:
+                    sortir=true;
+                    break;
+                default:
+                    System.out.println("error");
+       
+            }
+   
+        }while(!sortir);
+   }
+   
+    public void gestionarClient() throws SQLException{
+   
+        do{
+            
+            System.out.println("   ªªª   Menu client   ªªª ");
+            System.out.println(" 1- Visualitzar tots els client");
+            System.out.println(" 2- Consulta client ");
+            System.out.println(" 3- Alta un client ");
+            System.out.println(" 4- Baixa un client ");
+            System.out.println(" 5- Modificar dates de un client");
+            System.out.println(" 6- Tornar al genracio gimnas");
+            System.out.println("\t\nTRIA UNA OPCIO:");
+            
+             while(!teclat.hasNextInt()){
+                System.out.println("valor no valid");
+                teclat.next();
+                System.out.println("entre un numero: ");
+            }
+           
+            switch(opcio= teclat.nextInt() ){
+                case 1 :TotClient();
+                         
+                    break;
+                case 2 :consultaClient();
+                         
+                    break;
+                case 3 :altaClient();
+                          
+                    break;
+                case 4 :BaixaClient();
+                          
+                    break;
+                case 5 :ModifierClient();
+                      
+                    break;
+                case 6:gestionarGimnas();
+                    break;
+                default:
+                    System.out.println("error");
+            }
+       
+        }while(!sortir);
+   
+    }
+    private void TotClient() throws SQLException{
+        
+         do{
+            
+            System.out.println("\n   ªªª   Visualitzar tots els clients   ªªª ");
+            System.out.println(" 1- Visualitzar tots els client ordenat per cognom");
+            System.out.println(" 2- Visualitzar tots els client ordenat per edat ");
+            System.out.println(" 3- Visualitzar tots els client ordenat per reserva ");
+            System.out.println(" 4- Tornar al genracio client");
+            System.out.println("\t\nTRIA UNA OPCIO:");
+           
+             while(!teclat.hasNextInt()){
+                System.out.println("valor no valid");
+                teclat.next();
+                System.out.println("entre un numero: ");
+            }
+            
+            switch(opcio= teclat.nextInt() ){
+                case 1 :
+                    this.clientes = c.ClientOrderCognom();
+                      
+                    break;
+                case 2 :
+                     this.clientes = c.ClientOrderData();
+                       
+                    break;
+                case 3 :
+                     this.clientes = c.ClientOrderReserva();
+                       
+                    break;
+                case 4 :gestionarClient();
+                    break;
+                default:
+                    System.out.println("error");
+            }
+       
+        }while(!sortir);
+        
+            
+    }  
+       
+    private void consultaClient() throws SQLException{
+            c.consulta();
+    }
+   
+    private void altaClient() throws SQLException{
+            c.AltaClient();
+    }
+   
+    private void BaixaClient(){}
+   
+    private void ModifierClient() throws SQLException{
+            c.Modifier();
+    }
+    
+    private void ActividadMesReservaAlDia() throws SQLException{
+        Actividad a = new Actividad();
+        a.ActividadMesReservaAlDia();
+    
+    }
+    private void HistoricActividad() throws SQLException{
+        Actividad a = new Actividad();
+        a.HistoricActividad();
+    
+    }
+   
+}
+
