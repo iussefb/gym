@@ -1,0 +1,367 @@
+package gym;
+
+import static gym.Gimnas.teclat;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
+
+
+
+public class Client {
+   
+    private DNI dni;
+    private String nom;
+    private String cognom;
+    private CorreuElectronic email;
+    private String gender;
+    private LocalDate naix;
+    private int edad;
+    private Bancari bancari;
+    private Movil movil ;
+    private String fisica;
+    private int vegades;
+    DNI d= new DNI();
+    CorreuElectronic e = new CorreuElectronic();
+    Movil m = new Movil();
+
+    public Client() {
+    }
+
+    public Client(DNI dni, String nom, String cognom, CorreuElectronic email, String gender, LocalDate naix, int edad, Bancari bancari, Movil movil, String fisica, int vegades) {
+        this.dni = dni;
+        this.nom = nom;
+        this.cognom = cognom;
+        this.email = email;
+        this.gender = gender;
+        this.naix = naix;
+        this.edad = edad;
+        this.bancari = bancari;
+        this.movil = movil;
+        this.fisica = fisica;
+        this.vegades = vegades;
+    }
+
+    @Override
+    public String toString() {
+        return  " dni: " + dni.getDni() + ", nom: " + nom + ", cognom: " + cognom + ", email: " + email.getEmail() + ", gender: " + gender + ", naix: " + naix + ", edad: " + edad +" años " + ", bancari: " + bancari.getIban() + ", movil: " + movil.getMovil() + ", fisica: " + fisica ;
+    }
+
+   
+   
+    public Client(String nom, String cognom, String gender, String fisica) {
+        this.nom = nom;
+        this.cognom = cognom;
+        this.gender = gender;
+        this.fisica = fisica;
+    }
+    public void setDni(DNI dni) {
+        this.dni = dni;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setCognom(String cognom) {
+        this.cognom = cognom;
+    }
+
+    public void setEmail(CorreuElectronic email) {
+        this.email = email;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public void setNaix(LocalDate naix) {
+        this.naix = naix;
+    }
+
+    public void setBancari(Bancari bancari) {
+        this.bancari = bancari;
+    }
+
+    public void setMovil(Movil movil) {
+        this.movil = movil;
+    }
+
+    public void setFisica(String fisica) {
+        this.fisica = fisica;
+    }
+
+    public void setVegades(int vegades) {
+        this.vegades = vegades;
+    }
+
+   
+   
+    private void CalcularEdat(){
+        LocalDate ahora = LocalDate.now();
+        this.edad = Period.between(naix, ahora).getYears();
+    }
+   
+   
+   
+   public void consulta() throws SQLException{
+    //demanar el dni
+        System.out.println("\tªª  CONSULA DE CLIENT  ªª");
+        System.out.println("Enter el DNI del cliente que quieres consultar:");
+        String dni = teclat.next();
+        
+        Client cl = ConsulaDB(dni);
+        if(cl != null){
+           System.out.println("\tºº Datos de client  ºº");
+           System.out.println(cl);
+        }else {
+            System.out.println("   NO TROBO EL CLIENT !!!!!!");
+        }
+      
+   
+    }
+   
+    public Client ConsulaDB(String dni) throws SQLException{
+        Connection con = DBConnection.getCon();
+        PreparedStatement ps = con.prepareStatement("select * from cliente where dni =?");
+        
+        ps.setString(1, dni );
+        ResultSet rs = ps.executeQuery();
+        
+        if(rs.next()){
+            sacar(rs);
+        
+            return this;
+        }
+        
+        return null;
+    
+    
+    }
+   
+    private void Añadir(PreparedStatement ps){
+   
+   
+   
+   
+    }
+   
+    private void sacar(ResultSet rs) throws SQLException{
+            this.setDni(new DNI(rs.getString("dni")));
+            this.setNom (rs.getString("nom")) ;
+            this.setCognom (rs.getString("cognom"));
+            this.setEmail(new CorreuElectronic(rs.getString("email")));
+            this.setGender (rs.getString("sex"));
+            this.setNaix(  rs.getDate("data_naixament").toLocalDate());
+            this.setBancari(new Bancari (rs.getString("bancari")));
+            this.setMovil(new Movil (rs.getInt("movil")));
+            this.setFisica(rs.getString("fisica"));
+            CalcularEdat();
+           
+            /*System.out.println("El dni del cliente: " +dni.getDni() + " El NOM Y COGNOM: " + nom +" "+ cognom + "  El gender: " + gender +
+                "  El data de naixament: "+ naix +"EL EDAT DEL CLIENT: "+edad+" any  "+"  El movil del cliente: " + movil.getMovil() + "El compte bancari: " +
+                bancari.getIban() + " Condicio fisica: " + fisica );*/
+               
+    }
+   
+    public ArrayList<Client> ClientOrderData() throws SQLException{
+        ArrayList<Client> clients= new ArrayList<>();
+
+        Connection con = DBConnection.getCon();
+        PreparedStatement ps = con.prepareStatement("select * from cliente order by data_naixament  ");
+        ResultSet rs = ps.executeQuery();
+        System.out.println("\tªª visualitzar tot clients ordenat per data de naixament i visualitzar la edat ªª\n");
+        while(rs.next()){
+           
+            Client c = new Client();
+            c.sacar(rs);
+            System.out.println("");
+            clients.add(c);
+            System.out.println(c);
+        }
+        rs.close();
+        ps.close();
+        con.close();
+   
+    return clients;
+    }
+   
+   
+    public ArrayList<Client> ClientOrderCognom() throws SQLException{
+        ArrayList<Client> clients= new ArrayList<>();
+        Connection con = DBConnection.getCon();
+        PreparedStatement ps = con.prepareStatement("select * from cliente order by cognom ");
+        ResultSet rs = ps.executeQuery();
+        System.out.println("\tªª visualitzar tot clients ordenat per cognom ªª\n");
+        while(rs.next()){
+           
+            Client c = new Client();
+            c.sacar(rs);
+             System.out.println("");
+            clients.add(c);
+            System.out.println(c);
+        }
+        rs.close();
+        ps.close();
+        con.close();
+   
+    return clients;
+    }
+   
+     public ArrayList<Client> ClientOrderReserva() throws SQLException{
+        ArrayList<Client> clients= new ArrayList<>();
+        Connection con = DBConnection.getCon();
+        PreparedStatement ps = con.prepareStatement("select count(reserva.data_alta ) as vez , cliente.* from cliente join reserva on cliente.dni = reserva.dni group by cliente.nom order by vez desc ");
+        ResultSet rs = ps.executeQuery();
+        System.out.println("\tªª visualitzar tot clients ordenat per reserva ªª\n");
+
+        while(rs.next()){
+           
+            this.setVegades(rs.getInt("vez"));
+            Client c = new Client();
+            System.out.print("numero de reserva: " + vegades + " ");
+            c.sacar(rs);
+           
+           
+            clients.add(c);
+            System.out.println(c);
+        }
+        rs.close();
+        ps.close();
+        con.close();
+   
+    return clients;
+    }
+
+    public void AltaClient() throws SQLException{
+        Connection con = DBConnection.getCon();
+        PreparedStatement ps = con.prepareStatement("INSERT INTO `cliente`(dni,nom,cognom,sex,data_naixament,movil,email,bancari,fisica) VALUES (?,?,?,?,?,?,?,?,?)");
+       
+        
+        System.out.println("ºº  Alta de cliente  ºº");
+        
+        String dni ;
+        do{
+           System.out.println("enter dni");
+           dni = teclat.next();
+        }while(!d.ValidarDni(dni));
+        ps.setString(1, dni);
+        //*System.out.println(dni);
+       /* this.dni.setDni(dni);*/
+         
+        System.out.println("Enter el nom: ");
+        String nom = teclat.next();
+        ps.setString(2, nom);
+       
+        System.out.println("Enter el cognom:");
+        String cognom = teclat.next();
+        ps.setString(3, cognom);
+       
+        System.out.println("Enter el getder H/M:");
+        String gender = teclat.next();
+        ps.setString(4, gender);
+       
+        DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        boolean dataCorrecte;
+       
+        do{
+            try{
+                dataCorrecte=true;
+                System.out.println("Enter el data de naixament(yyyy-MM-dd):");
+                this.naix = LocalDate.parse(teclat.next(), f);
+            }catch(Exception e){
+                dataCorrecte=false;
+            }
+       
+        }while(!dataCorrecte);
+        ps.setObject(5, naix.toString());
+       
+       
+        int movil;
+        do{
+           System.out.println("Enter el movil:");
+         movil = teclat.nextInt();
+        }while(!m.validarMovil(movil));
+        ps.setInt(6, movil);
+        /*this.movil.setNumero(movil);*/
+       
+       
+        String email;
+        do{
+        System.out.println("Enter el email:");
+         email = teclat.next();
+        }while(!e.ValidarEmail(email));
+        ps.setString(7, email);
+        /*this.email.setEmail(email);*/
+       
+        System.out.println("Enter el compte bancari:");
+        String bancari = teclat.next();
+        ps.setString(8, bancari);
+       
+        System.out.println("Enter su condicio fisico:");
+        String fisic = teclat.nextLine();
+        ps.setString(9, fisic);
+       
+        ps.executeUpdate();
+        System.out.println("has afigit el client: " + nom );
+        ps.close();
+        con.close();
+   
+   
+   }
+   
+   
+   public void Modifier() throws SQLException{
+        Connection con = DBConnection.getCon();
+        PreparedStatement ps = con.prepareStatement("UPDATE `cliente` SET nom=?,cognom=?,sex=?,data_naixament=?,movil=?,email=?,bancari=?,fisica=? WHERE dni=?");
+       
+        System.out.println("Enter el DNI del clientque quieres modificar: ");
+        String Dni = teclat.next();
+        ps.setString(9, Dni);
+       
+        System.out.println("Enter el nom del client: ");
+        String nom = teclat.next();
+        ps.setString(1, nom);
+       
+        System.out.println("Enter el DNI del client: ");
+        String cognom = teclat.next();
+        ps.setString(2, cognom);
+       
+        System.out.println("Enter el gender del client(H/M): ");
+        String gender = teclat.next();
+        ps.setString(3, gender);
+       
+        System.out.println("Enter el data de naixament del client(AAAA-MM-DD): ");
+        String naix = teclat.next();
+        ps.setString(4, naix);
+       
+        System.out.println("Enter el movil del client: ");
+        int movil = teclat.nextInt();
+        ps.setInt(5, movil);
+       
+        System.out.println("Enter el Email del client: ");
+        String email = teclat.next();
+        ps.setString(6, email);
+       
+        System.out.println("Enter el compte bancari del client: ");
+        String bancari = teclat.next();
+        ps.setString(7, bancari);
+       
+        System.out.println("Enter el condicio fisic del client: ");
+        String fisic = teclat.next();
+        ps.setString(8, fisic);
+       
+        ps.executeUpdate();
+        ps.close();
+        con.close();
+   
+   
+   }
+   
+}
+
