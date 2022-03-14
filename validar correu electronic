@@ -1,0 +1,43 @@
+package gym;
+
+import java.util.Scanner;
+import java.util.logging.Logger;
+
+
+public class CorreuElectronic {
+   
+    private String email;
+    Scanner teclat = new Scanner (System.in);
+
+    public CorreuElectronic() {
+    }
+ 
+    public CorreuElectronic(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    
+    
+    
+   
+    public boolean ValidarEmail(String email){
+        int arroba = email.indexOf("@");
+        int punto = email.indexOf(".");
+       
+       
+        if(email.startsWith("@") || email.startsWith(".") || email.startsWith("/") || email.startsWith("#") || email.startsWith("+"))return false;
+        if(email.endsWith("@") || email.endsWith(".")|| email.endsWith("/") || email.endsWith("#") || email.endsWith("+"))return false;
+        if(arroba == -1 || punto== -1)   return false;
+        if(email.contains("'") || email.contains("/") || email.contains(" ")|| email.contains("+"))   return false;
+       
+        arroba +=1;
+        int secundArroba = email.indexOf("@", arroba);
+        if(secundArroba>0)return false;
+       
+        return true;
+    }
+}
